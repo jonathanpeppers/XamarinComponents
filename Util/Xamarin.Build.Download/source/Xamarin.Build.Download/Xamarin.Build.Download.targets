@@ -131,7 +131,8 @@
 
 	<Target Name="_XamarinAndroidBuildAarProguardConfigs"
 			DependsOnTargets="_XamarinAndroidBuildAarRestore"
-			>
+			Inputs="@(ReferencePath)"
+			Outputs="$(IntermediateOutputPath)XbdMerge\proguard.stamp">
 		<XamarinBuildAndroidAarProguardConfigs
 			TargetFrameworkVerison="$(TargetFrameworkVersion)"
 			IntermediateOutputPath="$(IntermediateOutputPath)"
@@ -141,6 +142,10 @@
 			VsInstallRoot="$(VsInstallRoot)">
 			<Output TaskParameter="AdditionalFileWrites" ItemName="FileWrites" />
 		</XamarinBuildAndroidAarProguardConfigs>
+		<MakeDir Directories="$(IntermediateOutputPath)XbdMerge" />
+		<Touch Files="$(IntermediateOutputPath)XbdMerge\proguard.stamp" AlwaysCreate="True">
+			<Output TaskParameter="TouchedFiles" ItemName="FileWrites"/>
+		</Touch>
 		<ItemGroup>
 			<ProguardConfiguration Include="$(IntermediateOutputPath)XbdMerge\proguard\*.txt" />
 		</ItemGroup>

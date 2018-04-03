@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
+using Microsoft.Build.Framework;
 using Mono.Cecil;
 using NUnit.Framework;
 using Xamarin.ContentPipeline.Tests;
@@ -884,8 +885,19 @@ namespace NativeLibraryDownloaderTests
 			var proguardConfigItems = project.GetItems ("ProguardConfiguration");
 
 			AssertNoMessagesOrWarnings (log);
-			Assert.IsTrue (success);
-			Assert.IsTrue (proguardConfigItems.Any ());
+			Assert.IsTrue (success, "First build should have succeeded!");
+			Assert.IsTrue (proguardConfigItems.Any (), "Did not find any ProguardConfiguration items!");
+
+			var taskName = "XamarinBuildAndroidAarProguardConfigs";
+			var task = log.Events.OfType<TaskFinishedEventArgs> ().FirstOrDefault (e => e.TaskName == taskName);
+			Assert.IsNotNull (task, $"{taskName} task should have run!");
+
+			//Build again, XamarinBuildAndroidAarProguardConfigs should not run without changes
+			success = BuildProject (engine, project, "_XamarinAndroidBuildAarProguardConfigs", log);
+			Assert.IsTrue (success, "Second build should have succeeded!");
+
+			task = log.Events.OfType<TaskFinishedEventArgs> ().FirstOrDefault (e => e.TaskName == taskName);
+			Assert.IsNull (task, $"{taskName} task should *not* have run!");
 		}
 	}
 }
