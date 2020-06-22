@@ -250,6 +250,17 @@ namespace Bumptech.Glide.Load.Model
     }
 }
 
+namespace Bumptech.Glide.Load.Model.Stream
+{
+    public partial class QMediaStoreUriLoader
+    {
+        public ModelLoaderLoadData BuildLoadData(Object model, int width, int height, Options options) =>
+            BuildLoadData((Uri)model, width, height, options);
+
+        public bool Handles(Object model) => Handles((Uri)model);
+    }
+}
+
 namespace Bumptech.Glide.Load.Resource.Bitmap
 {
 	public partial class BitmapDrawableEncoder
@@ -261,23 +272,6 @@ namespace Bumptech.Glide.Load.Resource.Bitmap
 	{
 		public virtual bool Encode(Object data, Java.IO.File file, Options options) => Encode((IResource)data, file, options);
     }
-
-    public partial class StreamBitmapDecoder : IResourceDecoder
-	{
-		IResource IResourceDecoder.Decode(Object source, int width, int height, Options options)
-		{
-			var stream = InputStreamInvoker.FromJniHandle(source.Handle, JniHandleOwnership.DoNotTransfer);
-
-			return Decode(stream, width, height, options);
-		}
-
-		bool IResourceDecoder.Handles(Object source, Options options)
-		{
-			var stream = InputStreamInvoker.FromJniHandle(source.Handle, JniHandleOwnership.DoNotTransfer);
-
-			return Handles(stream, options);
-		}
-	}
 }
 
 namespace Bumptech.Glide.Request
